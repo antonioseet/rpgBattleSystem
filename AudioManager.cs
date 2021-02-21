@@ -20,6 +20,7 @@ public class AudioManager : MonoBehaviour
     public GameStateManager gameStateManager;
 
     // Start is called before the first frame update
+    // Adding the main battle music that will be randomly chosen at the beginning of each match
     void Start()
     {
         songs.Add(song1);
@@ -29,9 +30,11 @@ public class AudioManager : MonoBehaviour
         songs.Add(song9);
         songs.Add(song13);
 
+        // Choose first song.
         changeSong();
     }
 
+    // ChangeSong will randomly choose a next song and begin to play it.
     public void changeSong()
     {
         float randomListIndex = Random.Range(0F, songs.Count - 1);
@@ -41,12 +44,14 @@ public class AudioManager : MonoBehaviour
         print(BGM.clip.name);
     }
 
+    // Once victoy is attained, this song will play and continue to loop until exit.
     public void playWin()
     {
         BGM.clip = win;
         BGM.Play();
     }
 
+    // If the player is defeated, this song will play once.
     public void playLoss()
     {
         BGM.clip = loss;

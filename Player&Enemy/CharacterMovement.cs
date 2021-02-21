@@ -15,7 +15,9 @@ public class CharacterMovement : MonoBehaviour
     void Update()
     {
         float newTime = Time.time;
-        if (animating & newTime - lastAnimationTime >= animationRate & character.getIsMoving())
+
+        // Timing for the animation of characters sidestepping when awaiting instruction
+        if (animating & (newTime - lastAnimationTime >= animationRate) & character.getIsMoving())
         {
             lastAnimationTime = newTime;
             animate();

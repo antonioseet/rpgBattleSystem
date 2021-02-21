@@ -1,0 +1,14 @@
+Add a start screen where it explains the rules of the game and the basic scheme to calculate points:
+
+	This that will decrease points:
+		More number of turns to defeat enemies
+		Number of players that are down
+		Receiving damage
+		Etc
+
+Game Mechanics to add:
+
+	Type specifications?
+	Start Screen that lets you choose enemies/players
+	Sprite Animations?
+	Attach effects?

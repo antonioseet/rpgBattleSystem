@@ -55,7 +55,7 @@ public class CamereMovement : MonoBehaviour {
                     finishedIncreasingSpeed = true;
             }
         }
-
+        // Camera oscillation
         float displacement = -2.5F*Mathf.Cos(time/cameraMovementRate + 1.7F) + x;
         float rotation = 14.5F * Mathf.Cos(time/cameraMovementRate + 1.7F) + yRot;
         transform.position = new Vector3(displacement, y, z);

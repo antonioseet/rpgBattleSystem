@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * Announcer Class
+ * Stores the location to all announcer sound clips and allows us to play a random sound from each desired list
+ */
+
 public class Announcer : MonoBehaviour
 {
     public AudioSource announcer;
 
+    // Individual Audio Clips categorized
     public AudioClip begin1, begin2, begin3, begin4, begin5, begin6, begin7, begin8;
-    
     public AudioClip bothMiss;
     public AudioClip crit1, crit2, crit3, crit4, crit5;
     public AudioClip critFirstTurn1, critFirstTurn2;
@@ -24,6 +29,7 @@ public class Announcer : MonoBehaviour
     public AudioClip waiting1, waiting2;
     public AudioClip win1, win2, win3;
 
+    // Lists of AudioClips
     private List<AudioClip> beginList = new List<AudioClip>();
     private List<AudioClip> critList = new List<AudioClip>();
     private List<AudioClip> critFirstTurnList = new List<AudioClip>();
@@ -39,6 +45,7 @@ public class Announcer : MonoBehaviour
 
 
     // Start is called before the first frame update
+    // Here all the lists get populated and are ready to be used when needed
     void Start()
     {
         beginList.Add(begin1);
@@ -93,12 +100,15 @@ public class Announcer : MonoBehaviour
         battleBegins();
     }
 
+    // Allows for the announcer to play a random clip from whichever list gets specified, this is done so that the announcer does not appear to be using a script.
     private AudioClip getRandomClip(List<AudioClip> playlist)
     {
         float randomListIndex = Random.Range(0F, playlist.Count-1);
         int randomIndex = Mathf.RoundToInt(randomListIndex);
         return playlist[randomIndex];
     }
+
+    // All methods below play the desired audio clips based on category or specific use
 
     private void battleBegins()
     {

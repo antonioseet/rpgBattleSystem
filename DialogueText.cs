@@ -28,6 +28,7 @@ public class DialogueText : MonoBehaviour
     }
 
     // Update is called once per frame but we want the dialgue to update based on time
+    // this allows for the rolling text animation
     void Update()
     {
 
@@ -56,6 +57,7 @@ public class DialogueText : MonoBehaviour
 
     public void setNewText(string newText)
     {
+        // Only change if there is new text to display
         if (!currentText.Equals(newText))
         {
             dialogueTextObject.text = "";

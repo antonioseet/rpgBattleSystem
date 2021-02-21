@@ -5,26 +5,30 @@ using UnityEngine.UI;
 
 public class GameStateManager : MonoBehaviour
 {
+    // Character game objects
     public GameObject tonyGameObj;
     public GameObject roxyGameObj;
     public GameObject forestCreatureGameObj;
     public GameObject JackOGameObj;
 
+    // Health bars
     public GameObject blueHealthChunk;
     public GameObject redHealthChunk;
     private Text blueChunk;
     private Text redChunk;
     private float fadeTimer;
 
+    // Audio
     public Announcer announcer;
     public new AudioManager audio;
     public SfxManager sfx;
 
+    private bool lowHealthSoundClipPlayed = false;
+    private bool lateTurnSoundClipPlayed = false;
+
+    // User Interface 
     public GameObject attackButton, specialAttackButton, potionButtonObject;
     private Button potionButton;
-
-    private List<Character> partyList = new List<Character>();
-    private List<Character> enemyList = new List<Character>();
 
     public Text playerHealthText;
     public Text enemyHealthText;
@@ -33,6 +37,10 @@ public class GameStateManager : MonoBehaviour
     public GameObject dialogueBox;
     public DialogueText dialogueText;
 
+    // Misc
+    private List<Character> partyList = new List<Character>();
+    private List<Character> enemyList = new List<Character>();
+
     private int numberOfPotions;
     private int turnCounter = 1;
     private Queue<Instruction> instructions = new Queue<Instruction>();
@@ -40,20 +48,18 @@ public class GameStateManager : MonoBehaviour
     private float battleTime;
     private float turnTimer;
     private float timePerAttack = 4;
-    private float notificationTime;
+    private float notificationTime; // time per battle notification
 
-    private bool lowHealthSoundClipPlayed = false;
-    private bool lateTurnSoundClipPlayed = false;
     private bool gameOver = false;
 
     private const int POTION_HP = 120;
 
     private Vector3 originalPosition, originalEnemyPosition;
 
-
     public GameState gameState = GameState.BattleStart;
     private FaintEnum faintEnum = FaintEnum.whoFainted;
 
+    // Gamestates to determine where we are in battle
     public enum GameState
     {
         BattleStart,
@@ -64,6 +70,7 @@ public class GameStateManager : MonoBehaviour
         GameOverLoss
     }
 
+    // States for fainting characters
     private enum FaintEnum
     {
         whoFainted,
@@ -174,8 +181,6 @@ public class GameStateManager : MonoBehaviour
                     turnCounter++;
                 }
 
-                
-
                 break;
             case GameState.CharacterFaints:
 
@@ -277,11 +282,13 @@ public class GameStateManager : MonoBehaviour
         uiUpdates();
     }
 
+    // After a character faints, we determine if anyone has been defeated
     public bool partyHasBeenDefeated(List<Character> party)
     {
         return party[0].hasFainted && party[1].hasFainted;
     }
 
+    // Instructions have a schedule, they execute based on speed priority
     public void changeInstructionOrderBasedOnSpeed(Queue<Instruction> instructions)
     {
         Instruction temp1 = instructions.Dequeue();
@@ -338,7 +345,7 @@ public class GameStateManager : MonoBehaviour
         enemyList[0].setIsMoving(true);
     }
 
-    //Switch the position of the characters and assign appropriate mainCharacter
+    //Switch the position of the characters and assign appropriate mainCharacter (whoever is fighting)
     public void switchCharPosition(List<Character> party)
     {
         float tempX = party[0].transform.position.x;
@@ -448,6 +455,7 @@ public class GameStateManager : MonoBehaviour
        
     }
 
+    // Player chooses regular attack, create a regular attack instruction for the player and determine enemy action
     public void regularAttackInstruction()
     {
         turnTimer = Time.time;
@@ -458,6 +466,7 @@ public class GameStateManager : MonoBehaviour
         gameState = GameState.ExecuteTurn;
     }
 
+    // Player chooses special attack, create a special attack instruction for the player and determine enemy action
     public void specialAttackInstruction()
     {
         turnTimer = Time.time;
@@ -468,13 +477,15 @@ public class GameStateManager : MonoBehaviour
         gameState = GameState.ExecuteTurn;
     }
 
+    // Player chooses to heal, enemy still gets to act so we also determine their next instruction
+    // consuming potion always executes first
     public void potionInstruction()
     {
         turnTimer = Time.time;
-        int healthHealed = POTION_HP;
+        int healthChange = POTION_HP;
         if (numberOfPotions > 0)
         {
-            //we should not have to check here because we are disabling the button in UI updates
+            //we should not have to check here because we are disabling the button in UI updates (but just in case)
             //Come back to it
             
             numberOfPotions -= 1;
@@ -486,14 +497,15 @@ public class GameStateManager : MonoBehaviour
 
             if (currentHP + POTION_HP > maxHP)
             {
-                healthHealed = maxHP - currentHP;
+                healthChange = maxHP - currentHP;
                 blueChunk.text = "+" + (maxHP-currentHP);
             }
             else
             {
                 blueChunk.text = "+" + POTION_HP;
             }
-            dialogueText.setNewText(partyList[0].characterName + " healed for " + healthHealed + " HP!");
+            // Update battle notification to reflect how much we heal for
+            dialogueText.setNewText(partyList[0].characterName + " healed for " + healthChange + " HP!");
             blueChunk.color = Color.green;
             partyList[0].changeHealth(POTION_HP);
 
@@ -503,16 +515,15 @@ public class GameStateManager : MonoBehaviour
         gameState = GameState.ExecuteTurn;
     }
 
+    // chooses a random enemy action (Adding percentage based logic to make enemies harder)
     private Instruction randomEnemyAction()
     {
-        return new Instruction(enemyList[0], partyList[0], getRandomAttackFromList(enemyList[0].getAttacks()), announcer, turnCounter, dialogueText, sfx, blueChunk, redChunk);
-    }
-
-    private Attack getRandomAttackFromList(List<Attack> list)
-    {
-        float randomListIndex = Random.Range(0F, list.Count - 1);
+        List<Attack> attackList = enemyList[0].getAttacks();
+        float randomListIndex = Random.Range(0F, attackList.Count - 1);
         int randomIndex = Mathf.RoundToInt(randomListIndex);
-        return list[randomIndex];
-    }
 
+
+        Attack enemyAttack = attackList[randomIndex];
+        return new Instruction(enemyList[0], partyList[0], enemyAttack, announcer, turnCounter, dialogueText, sfx, blueChunk, redChunk);
+    }
 }

@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ *  The Attack class will encapsulate the properties of normal and special attacks 
+ */
 public class Attack
 {
     public string attackName;
@@ -16,5 +19,6 @@ public class Attack
         this.power = power;
         this.accuracy = accuracy;
         this.isSpecial = isSpecial;
+        // add type specification for specials
     }
 }
